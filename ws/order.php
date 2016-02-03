@@ -5,7 +5,7 @@ use Service\UserService;
  * @author hshao
  * @version 2015-12-24 11:24:59
  */
-require __DIR__.'/../Model/User.model.php';
+require __DIR__.'/../Lib/functions.php';
 
 if (is_file("Conf/config.php")) {
     C(include 'Conf/config.php');
@@ -19,6 +19,13 @@ class order{
     public function __construct(){}
 
     public function orderRelationUpdateNotify($orderRelationUpdateNotifyRequest){
+        $user = new UserService();
+        foreach($orderRelationUpdateNotifyRequest as $k=>$r){
+            $msg.="{$k}=>'{$r}',";
+        }
+        $mobile = '13989497004';
+        $user->addVacLog($mobile, $msg);
+
         if (count($orderRelationUpdateNotifyRequest) == 15){
             $recordSequenceId = $orderRelationUpdateNotifyRequest['recordSequenceId'];
             $userIdType = $orderRelationUpdateNotifyRequest['userIdType'];
@@ -35,13 +42,7 @@ class order{
             $expireDate = $orderRelationUpdateNotifyRequest['expireDate'];
             $time_stamp = $orderRelationUpdateNotifyRequest['time_stamp'];
             $encodeStr = $orderRelationUpdateNotifyRequest['encodeStr'];
-            foreach($orderRelationUpdateNotifyRequest as $k=>$r){
-                $msg.="{$k}=>'{$r}',";
-            }
 
-            $mobile = '13989497004';
-            $user = new UserService();
-            $user->addVacLog($mobile, $msg);
             $costType = 4;
             $package = 'package';
 
@@ -59,7 +60,7 @@ class order{
 }
 
 $soaparray=array('soap_version' => SOAP_1_2);
-$server= new \SoapServer("http://10.155.30.170:8880/ws/order.wsdl",$soaparray);
+$server= new \SoapServer("http://127.0.0.1:8090/ws/order.wsdl",$soaparray);
 // $server=new SoapServer(file_get_contents('order.wsdl'),array('soap_version' => SOAP_1_2));
 $server->setClass("order");
 $server->handle();

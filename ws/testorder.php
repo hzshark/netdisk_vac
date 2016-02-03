@@ -1,10 +1,11 @@
 <?php
-header ( "Content-Type: text/html; charset=gb2312" );
+header ( "Content-Type: text/html; charset=utf-8" );
+date_default_timezone_set('Asia/Shanghai');//'Asia/Shanghai' 亚洲/上海
 /*
  * 指定WebService路径并初始化一个WebService客户端
  */
 $ws = "http://221.7.13.207:8090/ws/order.php?wsdl";//webservice服务的地址
-$client = new SoapClient ($ws);
+$client = new SoapClient ($ws, array('cache_wsdl' => 0));
 /*
  * 获取SoapClient对象引用的服务所提供的所有方法
  */
@@ -33,10 +34,25 @@ echo ("执行GetGUIDNode的结果:");
 // string expireDate;
 // string time_stamp;
 // string encodeStr;
-$recordSequenceId = '';
-
 $orderRequest = array();
+$orderRequest['recordSequenceId'] = 'recordSequenceId';
+$orderRequest['userIdType'] = 'userIdType';
+$orderRequest['userId'] = 'userId';
+$orderRequest['spId']= 'spId';
+$orderRequest['productId']= 'productId';
+$orderRequest['updateType']= 2;
+$orderRequest['updateTime']=date("Y-m-d h:i:s");
+$orderRequest['updateDesc']='updateDesc';
+$orderRequest['linkId']='linkId';
+$orderRequest['content']='content';
+$orderRequest['effectiveDate']=date("Y-m-d h:i:s");
+$orderRequest['expireDate']=date("Y-m-d h:i:s");
+$orderRequest['time_stamp'] = ''.time();
+$orderRequest['encodeStr'] = 'encodeStr';
+$orderRequest['serviceType']=0;
+var_dump($orderRequest);
 
-
-$result=$client->orderRelationUpdateNotify(array('CityName'=>'zhengzhou','CountryName'=>'china'));//查询中国郑州的天气，返回的是一个结构体
-echo $result->GetWeatherResult;//显示结果
+$param['orderRelationUpdateNotifyRequest'] = $orderRequest;
+var_dump($param);
+$result=$client->orderRelationUpdateNotify($param);
+var_dump($result);//显示结果
