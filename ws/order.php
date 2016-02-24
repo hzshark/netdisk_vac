@@ -19,6 +19,8 @@ class order{
     public function __construct(){}
 
     public function orderRelationUpdateNotify($orderRelationUpdateNotifyRequest){
+        $orderRelationUpdateNotifyResponse = array('resultCode'=>-6,'recordSequenceId'=>'');
+        return $orderRelationUpdateNotifyResponse;
         $user = new UserService();
         foreach($orderRelationUpdateNotifyRequest as $k=>$r){
             $msg.="{$k}=>'{$r}',";

@@ -4,7 +4,7 @@ date_default_timezone_set('Asia/Shanghai');//'Asia/Shanghai' 亚洲/上海
 /*
  * 指定WebService路径并初始化一个WebService客户端
  */
-$ws = "http://221.7.13.207:8090/ws/order.php?wsdl";//webservice服务的地址
+$ws = "http://127.0.0.1:8090/ws/order.php?wsdl";//webservice服务的地址
 $client = new SoapClient ($ws, array('cache_wsdl' => 0));
 /*
  * 获取SoapClient对象引用的服务所提供的所有方法
@@ -52,7 +52,14 @@ $orderRequest['encodeStr'] = 'encodeStr';
 $orderRequest['serviceType']=0;
 var_dump($orderRequest);
 
-$param['orderRelationUpdateNotifyRequest'] = $orderRequest;
-var_dump($param);
-$result=$client->orderRelationUpdateNotify($param);
+$orderRelationUpdateNotifyRequest = $orderRequest;
+var_dump(orderRelationUpdateNotifyRequest);
+$result=$client->orderRelationUpdateNotify(orderRelationUpdateNotifyRequest);
 var_dump($result);//显示结果
+
+echo ('</pre>');
+echo ('</pre>');
+echo '<h2>Request</h2>';
+echo '<pre>'.htmlspecialchars($client->__getLastRequest(), ENT_QUOTES).'</pre>';
+echo '<h2>Response</h2>';
+echo '</pre>'.htmlspecialchars($client->__getLastResponse(), ENT_QUOTES).'</pre>';
