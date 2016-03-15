@@ -9,9 +9,9 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace lib;
+namespace Lib;
 require __DIR__.'/Mysql.class.php';
-use lib\Mysql;
+use Lib\Mysql;
 /**
  * ThinkPHP 数据库中间层实现类
  */
@@ -40,7 +40,7 @@ class Db
             }
 
             self::$instance[$md5] = new Mysql($options);
-            
+
         }
         self::$_instance = self::$instance[$md5];
         return self::$_instance;

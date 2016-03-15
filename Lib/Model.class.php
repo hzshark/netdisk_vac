@@ -8,14 +8,14 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-namespace lib;
+namespace Lib;
 /**
  * ThinkPHP Model模型类
  * 实现了ORM和ActiveRecords模式
  */
 
 require __DIR__.'/Db.class.php';
-use lib\Db;
+use Lib\Db;
 
 
 class Model

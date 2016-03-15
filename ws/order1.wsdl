@@ -3,7 +3,7 @@
   <wsdl:types>
     <xsd:schema targetNamespace="http://10.155.30.170:888/ws/">
       <xsd:element name="orderRelationUpdateNotifyRequest">
-        <xsd:complexType name="OrderRelationUpdateNotifyRequest">
+        <xsd:complexType>
           <xsd:sequence>
           	<xsd:element name="recordSequenceId" type="xsd:string" maxOccurs="1" minOccurs="0" />
           	<xsd:element name="userIdType" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>

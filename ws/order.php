@@ -1,63 +1,65 @@
 <?php
-use Service\UserService;
 /**
  * VAC定制接口
  * @author hshao
  * @version 2015-12-24 11:24:59
  */
 require __DIR__.'/../Lib/functions.php';
-
-if (is_file("Conf/config.php")) {
-    C(include 'Conf/config.php');
+require __DIR__.'/../Lib/Model.class.php';
+require __DIR__.'/../Service/user.class.php';
+use Service\UserService;
+if (is_file(__DIR__."/../Conf/config.php")) {
+    C(include __DIR__.'/../Conf/config.php');
 }
 $timezone = "PRC";
 if (PHP_VERSION >= '5.1' && !empty($timezone))
 {
     date_default_timezone_set($timezone);
 }
+define('APP_DEBUG', FALSE);
+
 class order{
+
     public function __construct(){}
 
     public function orderRelationUpdateNotify($orderRelationUpdateNotifyRequest){
-        $orderRelationUpdateNotifyResponse = array('resultCode'=>-6,'recordSequenceId'=>'');
-        return $orderRelationUpdateNotifyResponse;
+        $orderRelationUpdateNotifyResponse = array('resultCode'=>-6,'recordSequenceId'=>C('DB_HOST'));
         $user = new UserService();
-        foreach($orderRelationUpdateNotifyRequest as $k=>$r){
-            $msg.="{$k}=>'{$r}',";
-        }
-        $mobile = '13989497004';
-        $user->addVacLog($mobile, $msg);
+        $lastsql = $user->addVacLog($orderRelationUpdateNotifyRequest);
+        $recordSequenceId = $orderRelationUpdateNotifyRequest->recordSequenceId;
+        $userIdType = $orderRelationUpdateNotifyRequest->userIdType;
+        $userId = $orderRelationUpdateNotifyRequest->userId;
+        $serviceType = $orderRelationUpdateNotifyRequest->serviceType;
+        $spId = $orderRelationUpdateNotifyRequest->spId;
+        $productId = $orderRelationUpdateNotifyRequest->productId;
+        $updateType = $orderRelationUpdateNotifyRequest->updateType;
+        $updateTime = $orderRelationUpdateNotifyRequest->updateTime;
+        $updateDesc = $orderRelationUpdateNotifyRequest->updateDesc;
+        $linkId = $orderRelationUpdateNotifyRequest->linkId;
+        $content = $orderRelationUpdateNotifyRequest->content;
+        $effectiveDate = $orderRelationUpdateNotifyRequest->effectiveDate;
+        $expireDate = $orderRelationUpdateNotifyRequest->expireDate;
+        $time_stamp = $orderRelationUpdateNotifyRequest->time_stamp;
+        $encodeStr = $orderRelationUpdateNotifyRequest->encodeStr;
 
-        if (count($orderRelationUpdateNotifyRequest) == 15){
-            $recordSequenceId = $orderRelationUpdateNotifyRequest['recordSequenceId'];
-            $userIdType = $orderRelationUpdateNotifyRequest['userIdType'];
-            $userId = $orderRelationUpdateNotifyRequest['userId'];
-            $serviceType = $orderRelationUpdateNotifyRequest['serviceType'];
-            $spId = $orderRelationUpdateNotifyRequest['spId'];
-            $productId = $orderRelationUpdateNotifyRequest['productId'];
-            $updateType = $orderRelationUpdateNotifyRequest['updateType'];
-            $updateTime = $orderRelationUpdateNotifyRequest['updateTime'];
-            $updateDesc = $orderRelationUpdateNotifyRequest['updateDesc'];
-            $linkId = $orderRelationUpdateNotifyRequest['linkId'];
-            $content = $orderRelationUpdateNotifyRequest['content'];
-            $effectiveDate = $orderRelationUpdateNotifyRequest['effectiveDate'];
-            $expireDate = $orderRelationUpdateNotifyRequest['expireDate'];
-            $time_stamp = $orderRelationUpdateNotifyRequest['time_stamp'];
-            $encodeStr = $orderRelationUpdateNotifyRequest['encodeStr'];
-
-            $costType = 4;
-            $package = 'package';
-
-            $ret = $user->setUserCost($mobile, $costType, $package);
-
-            $user->addVacLog($mobile, 'set user cost table result=>'.$ret);
-
-            if ($ret){
-                return array('resultCode'=>0,'recordSequenceId'=>$recordSequenceId);
+        $capacity = C('PACKAGE_0');
+        if ($serviceType == 90){
+            if ($content == 'ktkj'){
+                $capacity = C('PACKAGE_9');
             }
-        }else{
-            return array('resultCode'=>-6,'recordSequenceId'=>'');
+        }elseif ($serviceType == 60){
+            if ($content == 'zckj'){
+                $capacity = C('PACKAGE_6');
+            }
         }
+
+        $ret = $user->RegistUser($userId, C('USER_DEF_PASSWORD'), $capacity);
+        if ($ret['status'] == 0){
+                $user->setUserCost($userId, $serviceType, $content);
+        }
+        $orderRelationUpdateNotifyResponse['resultCode']=$ret['status'];
+        $orderRelationUpdateNotifyResponse['recordSequenceId']=$ret['msg'];
+        return $orderRelationUpdateNotifyResponse;
     }
 }
 

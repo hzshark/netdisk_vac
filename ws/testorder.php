@@ -4,19 +4,43 @@ date_default_timezone_set('Asia/Shanghai');//'Asia/Shanghai' 亚洲/上海
 /*
  * 指定WebService路径并初始化一个WebService客户端
  */
-$ws = "http://127.0.0.1:8090/ws/order.php?wsdl";//webservice服务的地址
-$client = new SoapClient ($ws, array('cache_wsdl' => 0));
+// $ws = "http://127.0.0.1:8888/ws/order.php?wsdl";//webservice服务的地址
+// $ws = "http://10.155.30.170:888/ws/order.php?wsdl";//webservice服务的地址
+// $ws = "http://211.155.225.70:8181/VacSyncServiceSPClient.asmx?WSDL";
+$ws = "http://221.7.13.207:8090/ws/order.php?wsdl";
+$client = new SoapClient ($ws, array('cache_wsdl' => 0,  'trace' => true));
 /*
  * 获取SoapClient对象引用的服务所提供的所有方法
  */
 echo ("SOAP服务器提供的开放函数:");
 echo ('<pre>');
 var_dump ( $client->__getFunctions () );//获取服务器上提供的方法
-echo ('</pre>');
-echo ("SOAP服务器提供的Type:");
-echo ('<pre>');
-var_dump ( $client->__getTypes () );//获取服务器上数据类型
-echo ('</pre>');
+// echo ('</pre>');
+// echo ("SOAP服务器提供的Type:");
+// echo ('<pre>');
+// var_dump ( $client->__getTypes () );//获取服务器上数据类型
+// echo ('</pre>');
+
+$orderRequest = array();
+$orderRequest['recordSequenceId'] = '201602242126463604';
+$orderRequest['userIdType'] = '1';
+$orderRequest['userId'] = '18699111271';
+$orderRequest['spId']= '82100';
+$orderRequest['productId']= '9089053000';
+$orderRequest['updateType']= 1;
+$orderRequest['updateTime']=''.date("Ymdhis");
+$orderRequest['updateDesc']='106558898';
+$orderRequest['linkId']='';
+// $orderRequest['content']='zckj';
+$orderRequest['content']='tdzc';
+// $orderRequest['content']='td';
+$orderRequest['effectiveDate']=''.date("Ymdhis");
+$orderRequest['expireDate']=''.date("Ymdhis");
+$orderRequest['time_stamp'] = ''.date("mdhis");
+$orderRequest['encodeStr'] = '1869911127290890530000224212646';
+$orderRequest['serviceType']=60;
+$orderRelationUpdateNotifyRequest  = $orderRequest;
+var_dump($orderRelationUpdateNotifyRequest);
 echo ("执行GetGUIDNode的结果:");
 
 // string recordSequenceId;
@@ -34,28 +58,14 @@ echo ("执行GetGUIDNode的结果:");
 // string expireDate;
 // string time_stamp;
 // string encodeStr;
-$orderRequest = array();
-$orderRequest['recordSequenceId'] = 'recordSequenceId';
-$orderRequest['userIdType'] = 'userIdType';
-$orderRequest['userId'] = 'userId';
-$orderRequest['spId']= 'spId';
-$orderRequest['productId']= 'productId';
-$orderRequest['updateType']= 2;
-$orderRequest['updateTime']=date("Y-m-d h:i:s");
-$orderRequest['updateDesc']='updateDesc';
-$orderRequest['linkId']='linkId';
-$orderRequest['content']='content';
-$orderRequest['effectiveDate']=date("Y-m-d h:i:s");
-$orderRequest['expireDate']=date("Y-m-d h:i:s");
-$orderRequest['time_stamp'] = ''.time();
-$orderRequest['encodeStr'] = 'encodeStr';
-$orderRequest['serviceType']=0;
-var_dump($orderRequest);
 
-$orderRelationUpdateNotifyRequest = $orderRequest;
-var_dump(orderRelationUpdateNotifyRequest);
-$result=$client->orderRelationUpdateNotify(orderRelationUpdateNotifyRequest);
-var_dump($result);//显示结果
+try {
+    $result=$client->orderRelationUpdateNotify($orderRelationUpdateNotifyRequest);
+    var_dump($result);//显示结果
+} catch (Exception $e) {
+    echo $e->getMessage();
+}
+exit(0);
 
 echo ('</pre>');
 echo ('</pre>');
