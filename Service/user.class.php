@@ -39,7 +39,7 @@ class UserService
         $userDao->add($data);
     }
 
-    public function setUserCost($mobile, $serviceType, $content){
+    public function setUserCost($mobile, $serviceType, $content=''){
         $uMobile = self::queryUserMobileByPhoneNumber($mobile);
         if ($uMobile == null || count($uMobile) == 0) {
             return FALSE;
@@ -49,21 +49,15 @@ class UserService
             $data['content'] = $content;
             $where['userid'] = $uMobile['userid'];
             $where['serviceType'] = $serviceType;
-            if (strpos($content, 'TD') === false){
-                $uCost = $costModel->where($where)->find();
-                if ($uCost == null || count($uCost) == 0){
+            if (strpos(strtoupper($content), 'TD') === false){
                     $data['userid'] = $uMobile['userid'];
                     $data['indate'] = date("Y-m-d h:i:s");
                     $data['serviceType'] = $serviceType;
                     $costModel->add($data);
-                }else{
-                    $data['indate'] = date("Y-m-d h:i:s");
-                    $costModel->where($where)->save($data);
-                }
             }else{
                 $costModel->where($where)->save($data);
             }
-            error_log( $costModel->getLastSql());
+//             error_log($costModel->getLastSql());
         }
         return True;
     }
