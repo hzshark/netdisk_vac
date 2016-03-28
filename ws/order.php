@@ -42,18 +42,7 @@ class order{
         $time_stamp = $orderRelationUpdateNotifyRequest->time_stamp;
         $encodeStr = $orderRelationUpdateNotifyRequest->encodeStr;
 
-        $capacity = C('PACKAGE_0');
-        if ($serviceType == 90){
-            if ($content == 'ktkj'){
-                $capacity = C('PACKAGE_9');
-            }
-        }elseif ($serviceType == 60){
-            if ($content == 'zckj'){
-                $capacity = C('PACKAGE_6');
-            }
-        }
-
-        $ret = $user->RegistUser($userId, C('USER_DEF_PASSWORD'), $capacity);
+        $ret = $user->RegistUser($userId, C('USER_DEF_PASSWORD'), $serviceType, $content);
         if ($ret['status'] == 0){
                 $user->setUserCost($userId, $serviceType, $content);
         }

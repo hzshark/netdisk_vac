@@ -24,22 +24,24 @@ var_dump ( $client->__getFunctions () );//获取服务器上提供的方法
 $orderRequest = array();
 $orderRequest['recordSequenceId'] = '201602242126463604';
 $orderRequest['userIdType'] = '1';
-$orderRequest['userId'] = '18699111271';
+$orderRequest['userId'] = '13989497004';
 $orderRequest['spId']= '82100';
 $orderRequest['productId']= '9089053000';
 $orderRequest['updateType']= 1;
 $orderRequest['updateTime']=''.date("Ymdhis");
 $orderRequest['updateDesc']='106558898';
 $orderRequest['linkId']='';
-// $orderRequest['content']='zckj';
-$orderRequest['content']='tdzc';
-// $orderRequest['content']='tykj';
-// $orderRequest['content']='td';
+// $orderRequest['content']='zckj';  // 60
+// $orderRequest['content']='tdzc';  // 60 tuiding
+// $orderRequest['content']='ktkj';  // 90
+$orderRequest['content']='td';     //  90tuiding
+// $orderRequest['content']='tykj';  // 00
+// $orderRequest['content']='tdty';  // 00  tuiding
 $orderRequest['effectiveDate']=''.date("Ymdhis");
 $orderRequest['expireDate']=''.date("Ymdhis");
 $orderRequest['time_stamp'] = ''.date("mdhis");
-$orderRequest['encodeStr'] = '1869911127290890530000224212646';
-$orderRequest['serviceType']=60;
+$orderRequest['encodeStr'] = '1398949700490890530000224212646';
+$orderRequest['serviceType']=90;
 $orderRelationUpdateNotifyRequest  = $orderRequest;
 var_dump($orderRelationUpdateNotifyRequest);
 echo ("执行GetGUIDNode的结果:");

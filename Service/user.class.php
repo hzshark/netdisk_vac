@@ -19,6 +19,10 @@ use lib\Model;
 
 class UserService
 {
+    private $Unsubscribe = 0;
+
+    private $Subscribe = 1;
+
     public function addVacLog($requestData){
         $userDao = new VacModel();
         $data['userId'] = $requestData->userId;
@@ -53,8 +57,10 @@ class UserService
                     $data['userid'] = $uMobile['userid'];
                     $data['indate'] = date("Y-m-d h:i:s");
                     $data['serviceType'] = $serviceType;
+                    $data['status'] = $this->Subscribe;
                     $costModel->add($data);
             }else{
+                $data['status'] = $this->Unsubscribe;
                 $costModel->where($where)->save($data);
             }
 //             error_log($costModel->getLastSql());
@@ -104,20 +110,86 @@ class UserService
         $umobile = $userDao->add($data);
     }
 
-    function setSpace($userid, $space){
+    function queryUserOrder($userid){
+        $costModel = new \UserCostModel();
+        $where['userid'] = $userid;
+        $where['status'] = $this->Subscribe;
+        return $costModel->where($where)->field('serviceType')->select();
+    }
+
+    function setSpace($userid, $serviceType, $content){
         $condition['userid'] = $userid;
-        $data['space'] = $space;
         $userDao = new UserSpaceModel();
         $user_space = $userDao->where($condition)->find();
         if ($user_space == null || count($user_space) == 0) {
             $data['userid'] = $userid;
+            switch ($serviceType) {
+                case 90:
+                    $space = C('PACKAGE_9');
+                    break;
+                case 60:
+                    $space = C('PACKAGE_6');
+                    break;
+                default:
+                    $space = C('PACKAGE_0');
+                break;
+            }
+            $data['space'] = $space;
             $userDao->add($data);
         }else{
+            if ($serviceType == 0 || strtoupper($content) == 'TDTY'){
+                return  true;
+            }
+            $userOrders = self::queryUserOrder($userid);
+            if (strpos(strtoupper($content), 'TD') === false){
+                foreach ($userOrders as $userOrder){
+                    $usertype = intval($userOrder["servicetype"]);
+                    $serviceType = $usertype > $serviceType? $usertype:$serviceType;
+                }
+            }else{
+                switch ($serviceType) {
+                    case 90:
+                        foreach ($userOrders as $userOrder){
+                            $usertype = intval($userOrder["servicetype"]);
+                            if ($usertype == 60){
+                                $serviceType = 60;
+                                break;
+                            }else{
+                                $serviceType = 0;
+                            }
+                        }
+                        break;
+                    case 60:
+                        foreach ($userOrders as $userOrder){
+                            $usertype = intval($userOrder["servicetype"]);
+                            if ($usertype == 90){
+                                $serviceType = 90;
+                                break;
+                            }else{
+                                $serviceType = 0;
+                            }
+                        }
+                        break;
+                }
+            }
+
+            switch ($serviceType) {
+                    case 90:
+                        $space = C('PACKAGE_9');
+                        break;
+                    case 60:
+                        $space = C('PACKAGE_6');
+                        break;
+                    default:
+                        $space = C('PACKAGE_0');
+                    break;
+                }
+            $data['space'] = $space;
             $userDao->where($condition)->save($data);
         }
     }
 
-    function RegistUser($umobile, $password, $capacity){
+    function RegistUser($umobile, $password, $serviceType, $content){
         $ret = array('status'=>-99, 'msg'=>'regist user unknown failed!');
         $query_ret = self::queryUserMobileByPhoneNumber($umobile);
         if ($query_ret == null || count($query_ret) == 0) {
@@ -129,12 +201,12 @@ class UserService
                 $userid = $user_ret['userid'];
                 self::addCephAuth($userid);
                 self::addUserMobile($userid, $umobile);
-                self::setSpace($userid,$capacity);
+                self::setSpace($userid,$serviceType, $content);
                 $ret['status'] = 0;
                 $ret['msg'] = 'Regist user success!';
             }
         }else {
-            self::setSpace($query_ret['userid'],$capacity);
+            self::setSpace($query_ret['userid'],$serviceType, $content);
             $ret['status'] = 0;
             $ret['msg'] = 'change user mobile ['.$umobile.'] space!';
         }
