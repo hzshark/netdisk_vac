@@ -42,6 +42,14 @@ class order{
         $time_stamp = $orderRelationUpdateNotifyRequest->time_stamp;
         $encodeStr = $orderRelationUpdateNotifyRequest->encodeStr;
 
+        if ($serviceType == 90 && empty($content)){
+            if ($updateType == 1){
+                $content = 'ktkj';
+            }else {
+                $content = 'td';
+            }
+        }
+
         $ret = $user->RegistUser($userId, C('USER_DEF_PASSWORD'), $serviceType, $content);
         if ($ret['status'] == 0){
                 $user->setUserCost($userId, $serviceType, $content);
