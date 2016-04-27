@@ -11,6 +11,20 @@ return array(
     'DB_CHARSET'        =>  'utf8',
     'DB_PREFIX'         =>  '',      	// 数据库表前缀
     'DB_DEBUG'  		=>  false, 			// 数据库调试模式 开启后可以记录SQL日志
+
+    'DB_SMS'=>array(
+        'DB_TYPE' => 'mysql',
+        'DB_USER' => 'netdisk',
+        'DB_PWD' => 'aerohive',
+        'DB_HOST' => '192.168.150.22',
+        'DB_PORT' => '3306',
+        'DB_NAME' => 'sms',
+        'DB_CHARSET'        =>  'utf8',
+        'DB_PREFIX'         =>  '',      	// 数据库表前缀
+        'DB_DEBUG'  		=>  false, 			// 数据库调试模式 开启后可以记录SQL日志
+    ),
+
+
     'SHOW_PAGE_TRACE'   =>	false,   		// 显示页面Trace信息
 
     /* SESSION设置 */

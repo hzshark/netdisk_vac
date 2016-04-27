@@ -20,11 +20,11 @@ var_dump ( $client->__getFunctions () );//获取服务器上提供的方法
 // echo ('<pre>');
 // var_dump ( $client->__getTypes () );//获取服务器上数据类型
 // echo ('</pre>');
-
+$mobile = '13119910011';
 $orderRequest = array();
 $orderRequest['recordSequenceId'] = '201602242126463604';
 $orderRequest['userIdType'] = '1';
-$orderRequest['userId'] = '13989497004';
+$orderRequest['userId'] = $mobile;
 $orderRequest['spId']= '82100';
 $orderRequest['productId']= '9089053000';
 $orderRequest['updateType']= 1;
@@ -40,7 +40,7 @@ $orderRequest['content']='td';     //  90tuiding
 $orderRequest['effectiveDate']=''.date("Ymdhis");
 $orderRequest['expireDate']=''.date("Ymdhis");
 $orderRequest['time_stamp'] = ''.date("mdhis");
-$orderRequest['encodeStr'] = '1398949700490890530000224212646';
+$orderRequest['encodeStr'] = $mobile.'0890530000224212646';
 $orderRequest['serviceType']=90;
 $orderRelationUpdateNotifyRequest  = $orderRequest;
 var_dump($orderRelationUpdateNotifyRequest);

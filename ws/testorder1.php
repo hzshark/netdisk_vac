@@ -55,28 +55,24 @@ class order{
         $ret = $user->RegistUser($userId, C('USER_DEF_PASSWORD'), $serviceType, $content);
         if ($ret['status'] == 0){
                 $user->setUserCost($userId, $serviceType, $content);
-                if ($updateType == 1){
-                    self::sendsms($userId);
-                }
         }
         $orderRelationUpdateNotifyResponse['resultCode']=$ret['status'];
         $orderRelationUpdateNotifyResponse['recordSequenceId']=$ret['msg'];
         return $orderRelationUpdateNotifyResponse;
     }
 
-    public function sendsms($mobile){
-    $sms = new SmsService();
+    public function testsms(){
+        $sms = new SmsService();
         $digest = $sms->sendSmsTxt("WO空间9元版套餐订购成功,您现在可以使用128G存储空间，并使用6G免费定向流量!");
         if ($digest){
             $p_sub_spnumber = '82100';
+            $mobile = '13119910011';
             $ret = $sms->AppendSmsQue($mobile, $digest, $p_sub_spnumber);
         }
+
+
     }
 }
-
-$soaparray=array('soap_version' => SOAP_1_2);
-$server= new \SoapServer("http://127.0.0.1:8090/ws/order.wsdl",$soaparray);
-// $server=new SoapServer(file_get_contents('order.wsdl'),array('soap_version' => SOAP_1_2));
-$server->setClass("order");
-$server->handle();
+$test = new order();
+$test->testsms();
 
