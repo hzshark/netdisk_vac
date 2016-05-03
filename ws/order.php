@@ -56,6 +56,7 @@ class order{
         if ($ret['status'] == 0){
                 $user->setUserCost($userId, $serviceType, $content);
                 if ($updateType == 1){
+                    error_log($userId);
                     self::sendsms($userId);
                 }
         }
@@ -65,11 +66,10 @@ class order{
     }
 
     public function sendsms($mobile){
-    $sms = new SmsService();
+        $sms = new SmsService();
         $digest = $sms->sendSmsTxt("WO空间9元版套餐订购成功,您现在可以使用128G存储空间，并使用6G免费定向流量!");
         if ($digest){
-            $p_sub_spnumber = '82100';
-            $ret = $sms->AppendSmsQue($mobile, $digest, $p_sub_spnumber);
+            $ret = $sms->AppendSmsQue($mobile, $digest);
         }
     }
 }

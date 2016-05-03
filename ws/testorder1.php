@@ -69,8 +69,6 @@ class order{
             $mobile = '13119910011';
             $ret = $sms->AppendSmsQue($mobile, $digest, $p_sub_spnumber);
         }
-
-
     }
 }
 $test = new order();
