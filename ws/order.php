@@ -49,14 +49,17 @@ class order{
                 $content = 'ktkj';
             }else {
                 $content = 'td';
+                $user->setUserStatus($userId, 2);
             }
+        }
+        if ($serviceType == 0 && strtoupper($content) == 'TDTY'){
+                $user->setUserStatus($userId, 2);
         }
 
         $ret = $user->RegistUser($userId, C('USER_DEF_PASSWORD'), $serviceType, $content);
         if ($ret['status'] == 0){
                 $user->setUserCost($userId, $serviceType, $content);
                 if ($updateType == 1){
-                    error_log($userId);
                     self::sendsms($userId);
                 }
         }

@@ -21,8 +21,9 @@ var_dump ( $client->__getFunctions () );//获取服务器上提供的方法
 // var_dump ( $client->__getTypes () );//获取服务器上数据类型
 // echo ('</pre>');
 $mobile = '13119910011';
+$mobile = '13989497004';
 $orderRequest = array();
-$orderRequest['recordSequenceId'] = '201602242126463604';
+$orderRequest['recordSequenceId'] = '201605222126463604';
 $orderRequest['userIdType'] = '1';
 $orderRequest['userId'] = $mobile;
 $orderRequest['spId']= '82100';
@@ -37,11 +38,13 @@ $orderRequest['content']='ktkj';  // 90
 // $orderRequest['content']='td';     //  90tuiding
 // $orderRequest['content']='tykj';  // 00
 // $orderRequest['content']='tdty';  // 00  tuiding
+$orderRequest['serviceType']=90;
+
 $orderRequest['effectiveDate']=''.date("Ymdhis");
 $orderRequest['expireDate']=''.date("Ymdhis");
 $orderRequest['time_stamp'] = ''.date("mdhis");
-$orderRequest['encodeStr'] = $mobile.'0890530000224212646';
-$orderRequest['serviceType']=90;
+$orderRequest['encodeStr'] = $mobile.'0890530000522212646';
+
 $orderRelationUpdateNotifyRequest  = $orderRequest;
 var_dump($orderRelationUpdateNotifyRequest);
 echo ("执行GetGUIDNode的结果:");
