@@ -43,26 +43,45 @@ class order{
         $expireDate = $orderRelationUpdateNotifyRequest->expireDate;
         $time_stamp = $orderRelationUpdateNotifyRequest->time_stamp;
         $encodeStr = $orderRelationUpdateNotifyRequest->encodeStr;
-
+        $Response_order = false;
         if ($serviceType == 90 && empty($content)){
             if ($updateType == 1){
                 $content = 'ktkj';
+                $Response_order = true;
             }else {
                 $content = 'td';
                 $user->setUserStatus($userId, 2);
             }
         }
-        if ($serviceType == 0 && strtoupper($content) == 'TDTY'){
-                $user->setUserStatus($userId, 2);
-        }
-
-        $ret = $user->RegistUser($userId, C('USER_DEF_PASSWORD'), $serviceType, $content);
-        if ($ret['status'] == 0){
+        if (strpos(strtoupper($content), 'TD') !== false) {
+            //退订处理
+            $user_mobile = $user->queryUserMobileByPhoneNumber($userId);
+            if ($user_mobile == null || count($user_mobile) == 0){
+                $ret['status'] = -99;
+                $ret['msg'] = 'The user mobile [' . $userId . '] not exist!';
+            }else{
+                $uid = $user_mobile['userid'];
+                $user->setSpace($uid, $serviceType, $content);  
                 $user->setUserCost($userId, $serviceType, $content);
-                if ($updateType == 1){
+                $ret_order = $user->queryUserOrder($uid);
+                if ($ret_order == null || count($ret_order) == 0){
+                    $user->setUserStatus($userId, $user->DISABLED);
+                }
+                $ret['status'] = 0;
+                $ret['msg'] = 'The user mobile [' . $userId . '] order changed!';
+            }
+        }else {
+            // 订购处理
+            $ret = $user->RegistUser($userId, C('USER_DEF_PASSWORD'), $serviceType, $content);
+            if ($ret['status'] == 0){
+                $user->setUserStatus($userId, $user->ACTIVATE);
+                $user->setUserCost($userId, $serviceType, $content);
+                if ($Response_order == 1){
                     self::sendsms($userId);
                 }
+            }
         }
+        
         $orderRelationUpdateNotifyResponse['resultCode']=$ret['status'];
         $orderRelationUpdateNotifyResponse['recordSequenceId']=$ret['msg'];
         return $orderRelationUpdateNotifyResponse;

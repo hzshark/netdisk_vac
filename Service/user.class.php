@@ -21,10 +21,10 @@ use lib\Model;
 class UserService
 {
 
-    private $Unsubscribe = 0;
-    // 没订购
-    private $Subscribe = 1;
-    // 订购
+    private $Unsubscribe = 0; // 没订购
+    private $Subscribe = 1;  // 订购
+    public $ACTIVATE = 0;    //帐号激活
+    public $DISABLED = 2;    //帐号停用
     public function addVacLog($requestData)
     {
         $userDao = new VacModel();
@@ -139,11 +139,10 @@ class UserService
         $costModel = new \UserCostModel();
         $where['userid'] = $userid;
         $where['status'] = $this->Subscribe;
-        return $costModel->where($where)
-            ->field('serviceType')
-            ->select();
+        $ret = $costModel->where($where)->field('serviceType')->select();
+        return $ret;
     }
-
+    
     function setSpace($userid, $serviceType, $content)
     {
         $condition['userid'] = $userid;
@@ -165,9 +164,6 @@ class UserService
             $data['space'] = $space;
             $userDao->add($data);
         } else {
-            if ($serviceType == 0) {
-                return true;
-            }
             $userOrders = self::queryUserOrder($userid);
             if (strtoupper($content) == 'TDZC') {
                 // 6元版退订操作,如果同时订购了9元版,用户容量设置成9元版,否则设置成免费版容量
@@ -187,41 +183,32 @@ class UserService
                         $space = C('PACKAGE_6');
                     }
                 }
+            } elseif (strtoupper($content) == 'TDTY') {
+                // 0元版退订,如果同时订购了6元版,用户容量设置成6元版,
+                // 如果订购9元版，用户容量设置成9元版容量，否则设置成免费版容量
+                $space = C('PACKAGE_0');
+                foreach ($userOrders as $userOrder) {
+                    $usertype = intval($userOrder["servicetype"]);
+                    if ($usertype == 90) {
+                        $space = C('PACKAGE_9');
+                        break;
+                    }elseif ($usertype == 60) {
+                        $space = C('PACKAGE_6');
+                    }
+                }
             } else {
-                // 订购操作，同步激活账号
-                self::setUserStatusById($userid, 1);
                 switch ($serviceType) {
                     case 90:
                         $space = C('PACKAGE_9');
                         break;
                     case 60:
                         $space = C('PACKAGE_6');
-                        foreach ($userOrders as $userOrder) {
-                            $usertype = intval($userOrder["servicetype"]);
-                            if ($usertype == 90) {
-                                $space = C('PACKAGE_9');
-                                break;
-                            }
-                        }
                         break;
                     case 0:
                         $space = C('PACKAGE_0');
-                        foreach ($userOrders as $userOrder) {
-                            $usertype = intval($userOrder["servicetype"]);
-                            if ($usertype == 90) {
-                                $space = C('PACKAGE_9');
-                                break;
-                            } elseif ($usertype == 60) {
-                                $space = C('PACKAGE_6') > $space ? C('PACKAGE_6') : $space;
-                            }
-                        }
                         break;
                 }
             }
-//             error_log("*********************");
-//             error_log($content);
-//             error_log($space);
-//             error_log("*********************");
             $data['space'] = $space;
             $userDao->where($condition)->save($data);
         }
@@ -235,6 +222,7 @@ class UserService
         );
         $query_ret = self::queryUserMobileByPhoneNumber($umobile);
         if ($query_ret == null || count($query_ret) == 0) {
+            // 帐号不存在，做开通处理
             $user_ret = self::createUser($umobile, $password);
             if ($user_ret == null || count($user_ret) == 0) {
                 $ret['status'] = - 99;
@@ -248,6 +236,7 @@ class UserService
                 $ret['msg'] = 'Regist user success!';
             }
         } else {
+            // 帐号存在，做变更处理
             self::setSpace($query_ret['userid'], $serviceType, $content);
             $ret['status'] = 0;
             $ret['msg'] = 'change user mobile [' . $umobile . '] space!';
