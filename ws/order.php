@@ -44,7 +44,7 @@ class order{
         $time_stamp = $orderRelationUpdateNotifyRequest->time_stamp;
         $encodeStr = $orderRelationUpdateNotifyRequest->encodeStr;
         $Response_order = false;
-        if ($serviceType == 90 && empty($content)){
+        if ($productId == $user->NINE_EDITION && empty($content)){
             if ($updateType == 1){
                 $content = 'ktkj';
                 $Response_order = true;
@@ -61,8 +61,8 @@ class order{
                 $ret['msg'] = 'The user mobile [' . $userId . '] not exist!';
             }else{
                 $uid = $user_mobile['userid'];
-                $user->setSpace($uid, $serviceType, $content);  
-                $user->setUserCost($userId, $serviceType, $content);
+                $user->setSpace($uid, $productId, $content);  
+                $user->setUserCost($userId, $productId, $content);
                 $ret_order = $user->queryUserOrder($uid);
                 if ($ret_order == null || count($ret_order) == 0){
                     $user->setUserStatus($userId, $user->DISABLED);
@@ -72,10 +72,11 @@ class order{
             }
         }else {
             // 订购处理
-            $ret = $user->RegistUser($userId, C('USER_DEF_PASSWORD'), $serviceType, $content);
+            $password = substr($userId, -6);
+            $ret = $user->RegistUser($userId, $password, $productId, $content);
             if ($ret['status'] == 0){
                 $user->setUserStatus($userId, $user->ACTIVATE);
-                $user->setUserCost($userId, $serviceType, $content);
+                $user->setUserCost($userId, $productId, $content);
                 if ($Response_order == 1){
                     self::sendsms($userId);
                 }
