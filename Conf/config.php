@@ -30,7 +30,7 @@ return array(
     /* SESSION设置 */
     'SESSION_AUTO_START'     => true, // 是否自动开启Session
 
-    'PACKAGE_0' => 1*1024*1024*1024,
+    'PACKAGE_0' => 8*1024*1024*1024,
     'PACKAGE_9' => 128*1024*1024*1024,
     'PACKAGE_6' => 64*1024*1024*1024,
     'USER_DEF_PASSWORD' => '123456',
