@@ -207,7 +207,7 @@ class UserService
                     case $this->NINE_EDITION:
                         $space = C('PACKAGE_9');
                         break;
-                    case $this->NINE_EDITION:
+                    case $this->SIX_EDITION:
                         $space = C('PACKAGE_6');
                         break;
                     case $this->FREE_EDITION:
