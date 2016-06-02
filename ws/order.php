@@ -80,12 +80,41 @@ class order{
                 if ($Response_order == 1){
                     self::sendsms($userId);
                 }
+                $mmsurl = C('MMS_URL').'?messageid='.C('MMS_MSGID').'&phone='.$userId.'&product='.$productId;
+                $proxy = C('HTTP_PROXY');
+                
+                $send_mms = $this->get_proxy($mmsurl, $proxy);
+                $ret['msg'] .= $send_mms;
             }
         }
         
         $orderRelationUpdateNotifyResponse['resultCode']=$ret['status'];
         $orderRelationUpdateNotifyResponse['recordSequenceId']=$ret['msg'];
         return $orderRelationUpdateNotifyResponse;
+    }
+    
+    function get_proxy($url, $proxy, $header = array(), $timeout = 10){
+        //初始化
+        $curl = curl_init();
+        curl_setopt ($curl, CURLOPT_PROXY, $proxy);
+        //设置抓取的url
+        curl_setopt($curl, CURLOPT_URL, $url);
+        if (count($header) > 0){
+            curl_setopt($curl, CURLOPT_HTTPHEADER,$header);
+        }
+        //设置头文件的信息作为数据流输出
+        curl_setopt($curl, CURLOPT_HEADER, false);
+        //设置获取的信息以文件流的形式返回，而不是直接输出。
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_TIMEOUT, $timeout); //30秒超时
+        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
+    
+        //执行命令
+        $data = curl_exec($curl);
+        //关闭URL请求
+        curl_close($curl);
+        //获得的数据
+        return $data;
     }
 
     public function sendsms($mobile){

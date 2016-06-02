@@ -34,5 +34,8 @@ return array(
     'PACKAGE_9' => 128*1024*1024*1024,
     'PACKAGE_6' => 64*1024*1024*1024,
     'USER_DEF_PASSWORD' => '123456',
+    'MMS_MSGID'  => 'jvs2e2y-enve-ilgu-qpvhvxp2q2q',
+    'MMS_URL' => 'http://211.155.225.70:779/index.php/mmssend',
+    'HTTP_PROXY' => "http://182.92.97.3:13128",
 
 );
