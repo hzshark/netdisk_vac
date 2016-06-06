@@ -32,7 +32,7 @@ class UserService
     {
         $userDao = new VacModel();
         $data['userId'] = $requestData->userId;
-        $data['indate'] = date("Y-m-d h:i:s");
+        $data['indate'] = date("Y-m-d H:i:s");
         $data['recordSequenceId'] = $requestData->recordSequenceId;
         $data['userIdType'] = $requestData->userIdType;
         $data['spId'] = $requestData->spId;
@@ -56,13 +56,13 @@ class UserService
             return FALSE;
         } else {
             $costModel = new \UserCostModel();
-            $data['updatetime'] = date("Y-m-d h:i:s");
+            $data['updatetime'] = date("Y-m-d H:i:s");
             $data['content'] = $content;
             $where['userid'] = $uMobile['userid'];
             $where['serviceType'] = $productId;
             if (strpos(strtoupper($content), 'TD') === false) {
                 $data['userid'] = $uMobile['userid'];
-                $data['indate'] = date("Y-m-d h:i:s");
+                $data['indate'] = date("Y-m-d H:i:s");
                 $data['serviceType'] = $productId;
                 $data['status'] = $this->Subscribe;
                 $costModel->add($data);
@@ -77,7 +77,7 @@ class UserService
 
     function createUser($name, $password)
     {
-        $data['lastlogin'] = date("Y-m-d h:i:s");
+        $data['lastlogin'] = date("Y-m-d H:i:s");
         $data['username'] = $name;
         $data['password'] = $password;
         $userDao = new userModel();
@@ -133,7 +133,7 @@ class UserService
         $userDao = new \UserMobileModel();
         $data['userid'] = $userid;
         $data['mobile'] = $umobile;
-        $data['indate'] = date("Y-m-d h:i:s");
+        $data['indate'] = date("Y-m-d H:i:s");
         $umobile = $userDao->add($data);
     }
 
