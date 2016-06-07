@@ -59,14 +59,16 @@ class UserService
             $data['updatetime'] = date("Y-m-d H:i:s");
             $data['content'] = $content;
             $where['userid'] = $uMobile['userid'];
-            $where['serviceType'] = $productId;
             if (strpos(strtoupper($content), 'TD') === false) {
+                $repeat_data['status'] = 2;
+                $costModel->where($where)->save($repeat_data);
                 $data['userid'] = $uMobile['userid'];
                 $data['indate'] = date("Y-m-d H:i:s");
                 $data['serviceType'] = $productId;
                 $data['status'] = $this->Subscribe;
                 $costModel->add($data);
             } else {
+                $where['serviceType'] = $productId;
                 $data['status'] = $this->Unsubscribe;
                 $costModel->where($where)->save($data);
             }
@@ -145,7 +147,7 @@ class UserService
         $ret = $costModel->where($where)->field('serviceType')->select();
         return $ret;
     }
-    
+
     function setSpace($userid, $productId, $content)
     {
         $condition['userid'] = $userid;
