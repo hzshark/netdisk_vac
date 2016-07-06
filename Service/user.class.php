@@ -32,7 +32,7 @@ class UserService
     {
         $userDao = new VacModel();
         $data['userId'] = $requestData->userId;
-        $data['indate'] = date("Y-m-d h:i:s");
+        $data['indate'] = date("Y-m-d H:i:s");
         $data['recordSequenceId'] = $requestData->recordSequenceId;
         $data['userIdType'] = $requestData->userIdType;
         $data['spId'] = $requestData->spId;

@@ -8,8 +8,10 @@ require __DIR__.'/../Lib/functions.php';
 require __DIR__.'/../Lib/Model.class.php';
 require __DIR__.'/../Service/user.class.php';
 require __DIR__.'/../Service/sms.class.php';
+require __DIR__.'/../Service/mms.class.php';
 use Service\UserService;
 use Service\SmsService;
+use Service\MmsService;
 if (is_file(__DIR__."/../Conf/config.php")) {
     C(include __DIR__.'/../Conf/config.php');
 }
@@ -82,8 +84,9 @@ class order{
                 }
                 $mmsurl = C('MMS_URL').'?messageid='.C('MMS_MSGID').'&phone='.$userId.'&product='.$productId;
                 $proxy = C('HTTP_PROXY');
-                
                 $send_mms = $this->get_proxy($mmsurl, $proxy);
+                $mms = new MmsService();
+                $mms->writeSendLog($mmsurl, $userId, $productId, $send_mms);
                 $ret['msg'] .= $send_mms;
             }
         }
