@@ -80,6 +80,7 @@ class UserService
     function createUser($name, $password)
     {
         $data['lastlogin'] = date("Y-m-d H:i:s");
+        $data['indate'] = date("Y-m-d H:i:s");
         $data['username'] = $name;
         $data['password'] = $password;
         $userDao = new userModel();
