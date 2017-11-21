@@ -25,14 +25,11 @@ class UserService
     private $Subscribe = 1;  // 订购
     public $ACTIVATE = 0;    //帐号激活
     public $DISABLED = 2;    //帐号停用
-    public $FREE_EDITION = 9089052800;
-    public $SIX_EDITION = 9089052900;
-    public $NINE_EDITION = 9089053000;
     public function addVacLog($requestData)
     {
         $userDao = new VacModel();
         $data['userId'] = $requestData->userId;
-        $data['indate'] = date("Y-m-d H:i:s");
+        $data['indate'] = date("Y-m-d h:i:s");
         $data['recordSequenceId'] = $requestData->recordSequenceId;
         $data['userIdType'] = $requestData->userIdType;
         $data['spId'] = $requestData->spId;
@@ -49,26 +46,24 @@ class UserService
         $userDao->add($data);
     }
 
-    public function setUserCost($mobile, $productId, $content = '')
+    public function setUserCost($mobile, $serviceType, $content = '')
     {
         $uMobile = self::queryUserMobileByPhoneNumber($mobile);
         if ($uMobile == null || count($uMobile) == 0) {
             return FALSE;
         } else {
             $costModel = new \UserCostModel();
-            $data['updatetime'] = date("Y-m-d H:i:s");
+            $data['updatetime'] = date("Y-m-d h:i:s");
             $data['content'] = $content;
             $where['userid'] = $uMobile['userid'];
+            $where['serviceType'] = $serviceType;
             if (strpos(strtoupper($content), 'TD') === false) {
-                $repeat_data['status'] = 2;
-                $costModel->where($where)->save($repeat_data);
                 $data['userid'] = $uMobile['userid'];
-                $data['indate'] = date("Y-m-d H:i:s");
-                $data['serviceType'] = $productId;
+                $data['indate'] = date("Y-m-d h:i:s");
+                $data['serviceType'] = $serviceType;
                 $data['status'] = $this->Subscribe;
                 $costModel->add($data);
             } else {
-                $where['serviceType'] = $productId;
                 $data['status'] = $this->Unsubscribe;
                 $costModel->where($where)->save($data);
             }
@@ -79,8 +74,7 @@ class UserService
 
     function createUser($name, $password)
     {
-        $data['lastlogin'] = date("Y-m-d H:i:s");
-        $data['indate'] = date("Y-m-d H:i:s");
+        $data['lastlogin'] = date("Y-m-d h:i:s");
         $data['username'] = $name;
         $data['password'] = $password;
         $userDao = new userModel();
@@ -136,7 +130,7 @@ class UserService
         $userDao = new \UserMobileModel();
         $data['userid'] = $userid;
         $data['mobile'] = $umobile;
-        $data['indate'] = date("Y-m-d H:i:s");
+        $data['indate'] = date("Y-m-d h:i:s");
         $umobile = $userDao->add($data);
     }
 
@@ -148,23 +142,20 @@ class UserService
         $ret = $costModel->where($where)->field('serviceType')->select();
         return $ret;
     }
-
-    function setSpace($userid, $productId, $content)
+    
+    function setSpace($userid, $serviceType, $content)
     {
         $condition['userid'] = $userid;
         $userDao = new UserSpaceModel();
         $user_space = $userDao->where($condition)->find();
         if ($user_space == null || count($user_space) == 0) {
             $data['userid'] = $userid;
-            switch ($productId) {
-                case $this->NINE_EDITION:
+            switch ($serviceType) {
+                case 90:
                     $space = C('PACKAGE_9');
                     break;
-                case $this->SIX_EDITION:
+                case 60:
                     $space = C('PACKAGE_6');
-                    break;
-                case $this->FREE_EDITION:
-                    $space = C('PACKAGE_0');
                     break;
                 default:
                     $space = C('PACKAGE_0');
@@ -179,7 +170,7 @@ class UserService
                 $space = C('PACKAGE_0');
                 foreach ($userOrders as $userOrder) {
                     $usertype = intval($userOrder["servicetype"]);
-                    if ($usertype == $this->NINE_EDITION) {
+                    if ($usertype == 90) {
                         $space = C('PACKAGE_9');
                     }
                 }
@@ -188,7 +179,7 @@ class UserService
                 $space = C('PACKAGE_0');
                 foreach ($userOrders as $userOrder) {
                     $usertype = intval($userOrder["servicetype"]);
-                    if ($usertype == $this->SIX_EDITION) {
+                    if ($usertype == 60) {
                         $space = C('PACKAGE_6');
                     }
                 }
@@ -198,22 +189,22 @@ class UserService
                 $space = C('PACKAGE_0');
                 foreach ($userOrders as $userOrder) {
                     $usertype = intval($userOrder["servicetype"]);
-                    if ($usertype == $this->NINE_EDITION) {
+                    if ($usertype == 90) {
                         $space = C('PACKAGE_9');
                         break;
-                    }elseif ($usertype == $this->SIX_EDITION) {
+                    }elseif ($usertype == 60) {
                         $space = C('PACKAGE_6');
                     }
                 }
             } else {
-                switch ($productId) {
-                    case $this->NINE_EDITION:
+                switch ($serviceType) {
+                    case 90:
                         $space = C('PACKAGE_9');
                         break;
-                    case $this->SIX_EDITION:
+                    case 60:
                         $space = C('PACKAGE_6');
                         break;
-                    case $this->FREE_EDITION:
+                    case 0:
                         $space = C('PACKAGE_0');
                         break;
                 }
@@ -223,7 +214,7 @@ class UserService
         }
     }
 
-    function RegistUser($umobile, $password, $productId, $content)
+    function RegistUser($umobile, $password, $serviceType, $content)
     {
         $ret = array(
             'status' => - 99,
@@ -240,13 +231,13 @@ class UserService
                 $userid = $user_ret['userid'];
                 self::addCephAuth($userid);
                 self::addUserMobile($userid, $umobile);
-                self::setSpace($userid, $productId, $content);
+                self::setSpace($userid, $serviceType, $content);
                 $ret['status'] = 0;
                 $ret['msg'] = 'Regist user success!';
             }
         } else {
             // 帐号存在，做变更处理
-            self::setSpace($query_ret['userid'], $productId, $content);
+            self::setSpace($query_ret['userid'], $serviceType, $content);
             $ret['status'] = 0;
             $ret['msg'] = 'change user mobile [' . $umobile . '] space!';
         }

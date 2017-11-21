@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://192.168.150.21:8090/ws/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="order" targetNamespace="http://192.168.150.21:8090/ws/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://127.0.0.1:8090/ws/">
+      <xsd:element name="orderRelationUpdateNotifyRequest">
+        <xsd:complexType>
+          <xsd:sequence>
+          	<xsd:element name="recordSequenceId" type="xsd:string" maxOccurs="1" minOccurs="0"/>
+          	<xsd:element name="userIdType" type="xsd:int" maxOccurs="1" minOccurs="0"></xsd:element>
+          	<xsd:element name="userId" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+          	<xsd:element name="serviceType" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+          	<xsd:element name="spId" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+          	<xsd:element name="productId" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+          	<xsd:element name="updateType" type="xsd:int" maxOccurs="1" minOccurs="0"></xsd:element>
+          	<xsd:element name="updateTime" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+          	<xsd:element name="updateDesc" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+          	<xsd:element name="linkId" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+          	<xsd:element name="content" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+          	<xsd:element name="effectiveDate" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+          	<xsd:element name="expireDate" type="xsd:string"
+          		maxOccurs="1" minOccurs="0">
+          	</xsd:element>
+          	<xsd:element name="time_stamp" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+          	<xsd:element name="encodeStr" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="orderRelationUpdateNotifyResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+          	<xsd:element name="recordSequenceId" type="xsd:string" maxOccurs="1" minOccurs="0"/>
+          	<xsd:element name="resultCode" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="orderRelationUpdateNotifyRequest">
+    <wsdl:part element="tns:orderRelationUpdateNotifyRequest" name="orderRelationUpdateNotifyRequest"/>
+  </wsdl:message>
+  <wsdl:message name="orderRelationUpdateNotifyResponse">
+    <wsdl:part element="tns:orderRelationUpdateNotifyResponse" name="OrderRelationUpdateNotifyResponse"/>
+  </wsdl:message>
+  <wsdl:portType name="order">
+    <wsdl:operation name="orderRelationUpdateNotify">
+      <wsdl:input message="tns:orderRelationUpdateNotifyRequest"/>
+      <wsdl:output message="tns:orderRelationUpdateNotifyResponse"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="orderSOAP" type="tns:order">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="orderRelationUpdateNotify">
+      <soap:operation soapAction="http://221.7.13.207:8090/ws/orderRelationUpdateNotify"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="order">
+    <wsdl:port binding="tns:orderSOAP" name="orderSOAP">
+      <soap:address location="http://221.7.13.207:8090/ws/order.php"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

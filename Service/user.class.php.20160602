@@ -25,14 +25,14 @@ class UserService
     private $Subscribe = 1;  // 订购
     public $ACTIVATE = 0;    //帐号激活
     public $DISABLED = 2;    //帐号停用
-    public $FREE_EDITION = 9089052800;
-    public $SIX_EDITION = 9089052900;
-    public $NINE_EDITION = 9089053000;
+    public $FREE_EDITION = '9089052800';
+    public $SIX_EDITION = '9089052900';
+    public $NINE_EDITION = '9089053000';
     public function addVacLog($requestData)
     {
         $userDao = new VacModel();
         $data['userId'] = $requestData->userId;
-        $data['indate'] = date("Y-m-d H:i:s");
+        $data['indate'] = date("Y-m-d h:i:s");
         $data['recordSequenceId'] = $requestData->recordSequenceId;
         $data['userIdType'] = $requestData->userIdType;
         $data['spId'] = $requestData->spId;
@@ -56,19 +56,17 @@ class UserService
             return FALSE;
         } else {
             $costModel = new \UserCostModel();
-            $data['updatetime'] = date("Y-m-d H:i:s");
+            $data['updatetime'] = date("Y-m-d h:i:s");
             $data['content'] = $content;
             $where['userid'] = $uMobile['userid'];
+            $where['serviceType'] = $productId;
             if (strpos(strtoupper($content), 'TD') === false) {
-                $repeat_data['status'] = 2;
-                $costModel->where($where)->save($repeat_data);
                 $data['userid'] = $uMobile['userid'];
-                $data['indate'] = date("Y-m-d H:i:s");
+                $data['indate'] = date("Y-m-d h:i:s");
                 $data['serviceType'] = $productId;
                 $data['status'] = $this->Subscribe;
                 $costModel->add($data);
             } else {
-                $where['serviceType'] = $productId;
                 $data['status'] = $this->Unsubscribe;
                 $costModel->where($where)->save($data);
             }
@@ -79,8 +77,7 @@ class UserService
 
     function createUser($name, $password)
     {
-        $data['lastlogin'] = date("Y-m-d H:i:s");
-        $data['indate'] = date("Y-m-d H:i:s");
+        $data['lastlogin'] = date("Y-m-d h:i:s");
         $data['username'] = $name;
         $data['password'] = $password;
         $userDao = new userModel();
@@ -136,7 +133,7 @@ class UserService
         $userDao = new \UserMobileModel();
         $data['userid'] = $userid;
         $data['mobile'] = $umobile;
-        $data['indate'] = date("Y-m-d H:i:s");
+        $data['indate'] = date("Y-m-d h:i:s");
         $umobile = $userDao->add($data);
     }
 
@@ -148,7 +145,7 @@ class UserService
         $ret = $costModel->where($where)->field('serviceType')->select();
         return $ret;
     }
-
+    
     function setSpace($userid, $productId, $content)
     {
         $condition['userid'] = $userid;

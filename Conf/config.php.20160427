@@ -11,33 +11,14 @@ return array(
     'DB_CHARSET'        =>  'utf8',
     'DB_PREFIX'         =>  '',      	// 数据库表前缀
     'DB_DEBUG'  		=>  false, 			// 数据库调试模式 开启后可以记录SQL日志
-
-    'DB_SMS'=>array(
-        'DB_TYPE' => 'mysql',
-        'DB_USER' => 'netdisk',
-        'DB_PWD' => 'aerohive',
-        'DB_HOST' => '192.168.150.22',
-        'DB_PORT' => '3306',
-        'DB_NAME' => 'sms',
-        'DB_CHARSET'        =>  'utf8',
-        'DB_PREFIX'         =>  '',      	// 数据库表前缀
-        'DB_DEBUG'  		=>  false, 			// 数据库调试模式 开启后可以记录SQL日志
-    ),
-
-
     'SHOW_PAGE_TRACE'   =>	false,   		// 显示页面Trace信息
 
     /* SESSION设置 */
     'SESSION_AUTO_START'     => true, // 是否自动开启Session
 
-    'PACKAGE_0' => 16*1024*1024*1024,
+    'PACKAGE_0' => 1*1024*1024*1024,
     'PACKAGE_9' => 128*1024*1024*1024,
     'PACKAGE_6' => 64*1024*1024*1024,
     'USER_DEF_PASSWORD' => '123456',
-    //'MMS_MSGID'  => 'jvs2e2y-enve-ilgu-qpvhvxp2q2q',
-    'MMS_MSGID'  => 'vhqwj1-r5ju-7bsa-bs8zzuzbbyw',
-    'MMS_URL' => 'http://211.155.225.70:779/index.php/mmssend',
-    //'MMS_URL' => 'http://221.7.5.30:8088/index.php/mmssend',
-    'HTTP_PROXY' => "http://182.92.97.3:13128",
 
 );

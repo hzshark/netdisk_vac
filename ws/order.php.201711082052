@@ -80,22 +80,22 @@ class order{
                 $user->setUserStatus($userId, $user->ACTIVATE);
                 $user->setUserCost($userId, $productId, $content);
                 if ($Response_order == 1){
-                    //self::sendsms($userId);
+                    self::sendsms($userId);
                 }
                 //$mmsurl = C('MMS_URL').'?messageid='.C('MMS_MSGID').'&phone='.$userId.'&product='.$productId;
                 $mmsurl = C('MMS_URL').'?messageid='.C('MMS_MSGID').'&phone='.$userId.'&product=9089052800';
                 $proxy = C('HTTP_PROXY');
-       //ob_end_clean(); 
-       //         try{
-       //         $send_mms = $this->get_proxy($mmsurl, $proxy);
-       //         $ret['msg'] .= $send_mms;
-       //         $mms = new MmsService();
-       //         $mms->writeSendLog($mmsurl, $userId, $productId, $send_mms);
-       //         } catch (Exception $e) {
-       //              error_log("send mms exception:".$e->getMessage());
-       //         }
+                $send_mms = $this->get_proxy($mmsurl, $proxy);
+                $ret['msg'] .= $send_mms;
+                try{
+                $mms = new MmsService();
+                $mms->writeSendLog($mmsurl, $userId, $productId, $send_mms);
+                } catch (Exception $e) {
+                     error_log("send mms exception:".$e->getMessage());
+                }
             }
         }
+        
         $orderRelationUpdateNotifyResponse['resultCode']=$ret['status'];
         $orderRelationUpdateNotifyResponse['recordSequenceId']=$ret['msg'];
         return $orderRelationUpdateNotifyResponse;

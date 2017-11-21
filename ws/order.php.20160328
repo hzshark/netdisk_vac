@@ -7,9 +7,7 @@
 require __DIR__.'/../Lib/functions.php';
 require __DIR__.'/../Lib/Model.class.php';
 require __DIR__.'/../Service/user.class.php';
-require __DIR__.'/../Service/sms.class.php';
 use Service\UserService;
-use Service\SmsService;
 if (is_file(__DIR__."/../Conf/config.php")) {
     C(include __DIR__.'/../Conf/config.php');
 }
@@ -44,15 +42,18 @@ class order{
         $time_stamp = $orderRelationUpdateNotifyRequest->time_stamp;
         $encodeStr = $orderRelationUpdateNotifyRequest->encodeStr;
 
-        if ($serviceType == 90 && empty($content)){
-            if ($updateType == 1){
-                $content = 'ktkj';
-            }else {
-                $content = 'td';
+        $capacity = C('PACKAGE_0');
+        if ($serviceType == 90){
+            if ($content == 'ktkj'){
+                $capacity = C('PACKAGE_9');
+            }
+        }elseif ($serviceType == 60){
+            if ($content == 'zckj'){
+                $capacity = C('PACKAGE_6');
             }
         }
 
-        $ret = $user->RegistUser($userId, C('USER_DEF_PASSWORD'), $serviceType, $content);
+        $ret = $user->RegistUser($userId, C('USER_DEF_PASSWORD'), $capacity);
         if ($ret['status'] == 0){
                 $user->setUserCost($userId, $serviceType, $content);
         }
@@ -60,24 +61,10 @@ class order{
         $orderRelationUpdateNotifyResponse['recordSequenceId']=$ret['msg'];
         return $orderRelationUpdateNotifyResponse;
     }
-
-    public function testsms(){
-        $sms = new SmsService();
-        var_dump($sms->getShortUuid());
-        $digest = $sms->sendSmsTxt("WO空间9元版套餐订购成功,您现在可以使用128G存储空间，并使用6G免费定向流量!");
-        var_dump($digest);
-        if ($digest){
-            $p_sub_spnumber = '82100';
-            $mobile = '13119910011';
-           // var_dump($digest);
-            //$ret = $sms->AppendSmsQue($mobile, $digest, $p_sub_spnumber);
-            var_dump($ret);
-
-        }
-
-
-    }
 }
-$test = new order();
-$test->testsms();
 
+$soaparray=array('soap_version' => SOAP_1_2);
+$server= new \SoapServer("http://127.0.0.1:8090/ws/order.wsdl",$soaparray);
+// $server=new SoapServer(file_get_contents('order.wsdl'),array('soap_version' => SOAP_1_2));
+$server->setClass("order");
+$server->handle();
