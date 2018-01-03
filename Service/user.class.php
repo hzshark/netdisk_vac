@@ -252,4 +252,17 @@ class UserService
         }
         return $ret;
     }
+
+    public function writeSyncLog($mobile, $passwd, $sign, $stime, $result){
+        $sync = new \SyncUserModel();
+        $data['indate'] = date("Y-m-d H:i:s");
+        $data['result'] = $result;
+        $data['mobile'] = $mobile;
+        $data['password'] = $passwd;
+        $data['sign'] = $sign;
+        $data['stime'] = $stime;
+
+        $sync->add($data);
+    }
+
 }

@@ -9,9 +9,11 @@ require __DIR__.'/../Lib/Model.class.php';
 require __DIR__.'/../Service/user.class.php';
 require __DIR__.'/../Service/sms.class.php';
 require __DIR__.'/../Service/mms.class.php';
+require __DIR__.'/../Service/HttpThread.class.php';
+use Service\MmsService;
 use Service\UserService;
 use Service\SmsService;
-use Service\MmsService;
+use Service\HttpThread;
 if (is_file(__DIR__."/../Conf/config.php")) {
     C(include __DIR__.'/../Conf/config.php');
 }
@@ -35,7 +37,7 @@ class order{
 	set_error_handler("userErrorHandler"); 
         $orderRelationUpdateNotifyResponse = array('resultCode'=>-6,'recordSequenceId'=>C('DB_HOST'));
         $user = new UserService();
-        $lastsql = $user->addVacLog($orderRelationUpdateNotifyRequest);
+        $user->addVacLog($orderRelationUpdateNotifyRequest);
         $recordSequenceId = $orderRelationUpdateNotifyRequest->recordSequenceId;
         $userIdType = $orderRelationUpdateNotifyRequest->userIdType;
         $userId = $orderRelationUpdateNotifyRequest->userId;
@@ -88,23 +90,27 @@ class order{
                 if ($Response_order == 1){
                     //self::sendsms($userId);
                 }
-                //$mmsurl = C('MMS_URL').'?messageid='.C('MMS_MSGID').'&phone='.$userId.'&product='.$productId;
-                $mmsurl = C('MMS_URL').'?messageid='.C('MMS_MSGID').'&phone='.$userId.'&product=9089052800';
-                $proxy = C('HTTP_PROXY');
-       //ob_end_clean(); 
-       //         try{
-                  $send_mms = $this->get_proxy($mmsurl, $proxy);
-                  $ret['msg'] .= $send_mms;
-       //         $mms = new MmsService();
-       //         $mms->writeSendLog($mmsurl, $userId, $productId, $send_mms);
-       //         } catch (Exception $e) {
-       //              error_log("send mms exception:".$e->getMessage());
-       //         }
+                try{
+                    $mmsurl = C('MMS_URL').'?messageid='.C('MMS_MSGID').'&phone='.$userId.'&product=9089052800';
+
+                    $send_mms = $this->mms_send($mmsurl);
+                    $ret['msg'] .= $send_mms;
+                    $mms = new MmsService();
+                    $mms->writeSendLog($mmsurl, $userId, $productId, $send_mms);
+                } catch (Exception $e) {
+                     error_log("send mms exception:".$e->getMessage());
+                }
+
+                try{
+                    $this->syncUser($userId, $password);
+                } catch (Exception $e) {
+                    error_log("sync user exception:".$e->getMessage());
+                }
+
             }
         }
         $orderRelationUpdateNotifyResponse['resultCode']=$ret['status'];
         $orderRelationUpdateNotifyResponse['recordSequenceId']=$ret['msg'];
-        error_log(" send orderrelationupdatenotify respone .....::". $send_mms);
 	return $orderRelationUpdateNotifyResponse;
     }
 
@@ -154,6 +160,46 @@ class order{
         $digest = $sms->sendSmsTxt("WO空间9元版套餐订购成功,您现在可以使用128G存储空间，并使用6G免费定向流量!");
         if ($digest){
             $ret = $sms->AppendSmsQue($mobile, $digest);
+        }
+    }
+
+    private function mms_send($url){
+        $proxy = C('HTTP_PROXY');
+        $myThread = new HttpThread('mmsSend', $url);
+        $myThread->setHttpProxy($proxy);
+        $myThread->start();
+        while($myThread->isRunning()) {
+            usleep(100);
+        }
+        if ($myThread->join()) {
+            return $myThread->result;
+        }
+        return "";
+    }
+
+    private function syncUser($mobile, $pwd){
+        $url = C("SYNC_USER_URL");
+        $proxy = C('HTTP_PROXY');
+        $stime = microtime(true);
+
+        $sign = md5($mobile.'com.chd.yunpan'.$pwd.$stime);
+
+        $param = array(
+            "phone" => $mobile,
+            "pwd" => $pwd,
+            "time" => $stime,
+            "sign" => $sign,
+        );
+        $myThread = new HttpThread('syncUserReg', $url);
+        $myThread->setHttpProxy($proxy);
+        $myThread->setPostParam($param);
+        $myThread->start();
+        while($myThread->isRunning()) {
+            usleep(100);
+        }
+        if ($myThread->join()) {
+            $user = new UserService();
+            $user->writeSyncLog($mobile, $pwd, $sign, $stime, $myThread->result);
         }
     }
 
