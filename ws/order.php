@@ -22,11 +22,17 @@ if (PHP_VERSION >= '5.1' && !empty($timezone))
 }
 define('APP_DEBUG', FALSE);
 
+
 class order{
+	
 
     public function __construct(){}
-
+	
     public function orderRelationUpdateNotify($orderRelationUpdateNotifyRequest){
+	//error_reporting(0);  
+
+        error_log(" begin call vac order ...");
+	set_error_handler("userErrorHandler"); 
         $orderRelationUpdateNotifyResponse = array('resultCode'=>-6,'recordSequenceId'=>C('DB_HOST'));
         $user = new UserService();
         $lastsql = $user->addVacLog($orderRelationUpdateNotifyRequest);
@@ -87,8 +93,8 @@ class order{
                 $proxy = C('HTTP_PROXY');
        //ob_end_clean(); 
        //         try{
-       //         $send_mms = $this->get_proxy($mmsurl, $proxy);
-       //         $ret['msg'] .= $send_mms;
+                  $send_mms = $this->get_proxy($mmsurl, $proxy);
+                  $ret['msg'] .= $send_mms;
        //         $mms = new MmsService();
        //         $mms->writeSendLog($mmsurl, $userId, $productId, $send_mms);
        //         } catch (Exception $e) {
@@ -98,8 +104,50 @@ class order{
         }
         $orderRelationUpdateNotifyResponse['resultCode']=$ret['status'];
         $orderRelationUpdateNotifyResponse['recordSequenceId']=$ret['msg'];
-        return $orderRelationUpdateNotifyResponse;
+        error_log(" send orderrelationupdatenotify respone .....::". $send_mms);
+	return $orderRelationUpdateNotifyResponse;
     }
+
+
+	
+   function userErrorHandler($errno, $errmsg, $filename, $linenum, $vars)  
+    {  
+    $dt = date("Y-m-d H:i:s (T)");      
+    // define an assoc array of error string      
+    // in reality the only entries we should      
+    // consider are E_WARNING, E_NOTICE, E_USER_ERROR,      
+    // E_USER_WARNING and E_USER_NOTICE      
+    $errortype = array (                  
+        E_ERROR              => 'Error',                  
+        E_WARNING            => 'Warning',                  
+        E_PARSE              => 'Parsing Error',                  
+        E_NOTICE             => 'Notice',                  
+        E_CORE_ERROR         => 'Core Error',                  
+        E_CORE_WARNING       => 'Core Warning',                  
+        E_COMPILE_ERROR      => 'Compile Error',                  
+        E_COMPILE_WARNING    => 'Compile Warning',                  
+        E_USER_ERROR         => 'User Error',                  
+        E_USER_WARNING       => 'User Warning',                  
+        E_USER_NOTICE        => 'User Notice',                  
+        E_STRICT             => 'Runtime Notice',                  
+        E_RECOVERABLE_ERROR  => 'Catchable Fatal Error'                  
+    );      
+    // set of errors for which a var trace will be saved      
+    $user_errors = array(E_USER_ERROR, E_USER_WARNING, E_USER_NOTICE);          
+    $err = "<errorentry>\n";      
+    $err .= "\t<datetime>" . $dt . "</datetime>\n";      
+    $err .= "\t<errornum>" . $errno . "</errornum>\n";      
+    $err .= "\t<errortype>" . $errortype[$errno] . "</errortype>\n";      
+    $err .= "\t<errormsg>" . $errmsg . "</errormsg>\n";      
+    $err .= "\t<scriptname>" . $filename . "</scriptname>\n";      
+    $err .= "\t<scriptlinenum>" . $linenum . "</scriptlinenum>\n";      
+    if (in_array($errno, $user_errors)) {          
+        $err .= "\t<vartrace>" . wddx_serialize_value($vars, "Variables") . "</vartrace>\n";      
+    }      
+    $err .= "</errorentry>\n\n";  
+    //echo $err;
+    error_log($err);  
+    }  
 
     public function sendsms($mobile){
         $sms = new SmsService();
@@ -109,10 +157,10 @@ class order{
         }
     }
 
-    function get_proxy($url, $proxy, $header = array(), $timeout = 10){
+    function get_proxy($url, $proxy, $header = array(), $timeout = 30){
         //初始化
         $curl = curl_init();
-        curl_setopt ($curl, CURLOPT_PROXY, $proxy);
+         curl_setopt ($curl, CURLOPT_PROXY, $proxy);
         //设置抓取的url
         curl_setopt($curl, CURLOPT_URL, $url);
         if (count($header) > 0){
@@ -129,6 +177,8 @@ class order{
         $data = curl_exec($curl);
         //关闭URL请求
         curl_close($curl);
+	$err=curl_errno($curl);
+	error_log("curl error: ".$err);
         //获得的数据
         return $data;
     }

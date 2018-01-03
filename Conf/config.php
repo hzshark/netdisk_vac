@@ -39,5 +39,6 @@ return array(
     'MMS_URL' => 'http://211.155.225.70:779/index.php/mmssend',
     //'MMS_URL' => 'http://221.7.5.30:8088/index.php/mmssend',
     'HTTP_PROXY' => "http://182.92.97.3:13128",
+    //'HTTP_PROXY' => "http://182.92.97.3:3128",
 
 );
