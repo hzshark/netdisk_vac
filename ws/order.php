@@ -32,9 +32,9 @@ class order{
 	
     public function orderRelationUpdateNotify($orderRelationUpdateNotifyRequest){
 	//error_reporting(0);  
-
-        error_log(" begin call vac order ...");
-	set_error_handler("userErrorHandler"); 
+//
+//        error_log(" begin call vac order ...");
+//	set_error_handler("userErrorHandler");
         $orderRelationUpdateNotifyResponse = array('resultCode'=>-6,'recordSequenceId'=>C('DB_HOST'));
         $user = new UserService();
         $user->addVacLog($orderRelationUpdateNotifyRequest);
@@ -190,6 +190,7 @@ class order{
             "time" => $stime,
             "sign" => $sign,
         );
+//        error_log($url);
         $myThread = new HttpThread('syncUserReg', $url);
         $myThread->setHttpProxy($proxy);
         $myThread->setPostParam($param);

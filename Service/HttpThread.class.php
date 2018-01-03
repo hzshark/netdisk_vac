@@ -86,24 +86,22 @@ class HttpThread extends \Thread
 
         //执行命令
         $data = curl_exec($curl);
+
         //关闭URL请求
         curl_close($curl);
 //        $err=curl_errno($curl);
 //        error_log("curl error: ".$err);
+//        error_log("curl error1: ".$data);
         //获得的数据
         return $data;
     }
 
     public function run() {
-        echo "start run tread";
-        sleep(3);
         $this->result = $this->httpRequest($this->request_url, $this->proxy, $this->header, $this->timeout);
-
-
     }
 
 }
-
+//
 //$url = "http://www.heartfree.cn/XqUserAPI/woRegist";
 //
 ////$url = 'https://www.baidu.com/s?wd='. rand(10000, 20000);
@@ -126,11 +124,11 @@ class HttpThread extends \Thread
 //
 //
 ////这里创建线程池.
-//$myThread = new HttpThread.class('syncUserReg', $url);
+//$myThread = new HttpThread('syncUserReg', $url);
 //
 //$myThread->setPostParam($param);
-
-//启动所有线程,使其处于工作状态
+//
+////启动所有线程,使其处于工作状态
 //$myThread->start();
 //echo "==============";
 //
