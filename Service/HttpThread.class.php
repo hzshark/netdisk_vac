@@ -56,7 +56,6 @@ class HttpThread extends \Thread
         if ($proxy) {
             curl_setopt($curl, CURLOPT_PROXY, $proxy);
         }
-
         if($this->isPost){
             // 设置为POST方式
             curl_setopt( $curl, CURLOPT_POST, true );
@@ -83,10 +82,8 @@ class HttpThread extends \Thread
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_TIMEOUT, $timeout); //30秒超时
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
-
         //执行命令
         $data = curl_exec($curl);
-
         //关闭URL请求
         curl_close($curl);
 //        $err=curl_errno($curl);
